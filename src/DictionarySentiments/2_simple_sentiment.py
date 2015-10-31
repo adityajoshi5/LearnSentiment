@@ -44,9 +44,9 @@ class SimpleSentiments():
         test_sentence = sentence.lower()
         test_sentence_without_punctuation = ' '.join(word.strip(string.punctuation) for word in test_sentence.split())
         
-        filtered_sentence = " ".join(word for word in test_sentence_without_punctuation.split() if word not in self.stopwords)
+        sentence = " ".join(word for word in test_sentence_without_punctuation.split() if word not in self.stopwords)
         
-        for word in filtered_sentence.split(' '):
+        for word in sentence.split(' '):
             try:
                 test_score = self.scores[word]
                 sum+=test_score
