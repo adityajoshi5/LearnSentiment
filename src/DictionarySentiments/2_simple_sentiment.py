@@ -11,23 +11,29 @@ class SimpleSentiments():
                 continue
             parts = line.strip().split('\t')
             self.lexicon_lines.append(parts)
-        print len(self.lexicon_lines)
             
     def crunch_scores(self):
         tempscores = {}
-        scores = {}
+        self.scores = {}        
         for sentence in self.lexicon_lines:
-            pos_score = sentence[2].strip()
-            neg_score = sentence[3].strip()
-            words = [x.split("#")[0] for x in sentence[4].strip().split(" ")]
-            for word in words:
-                if word not in tempscores.keys():
-                    tempscores[word] = []
-                tempscores[word].append(float(pos_score))
-                tempscores[word].append(-float(neg_score))
+            try:
+                pos_score = sentence[2].strip()
+                neg_score = sentence[3].strip()
+                words = [x.split("#")[0] for x in sentence[4].strip().split(" ")]
+                for word in words:
+                    try:
+                        tempscores[word].append(float(pos_score))
+                        tempscores[word].append(-float(neg_score))
+                    except:
+                        tempscores[word]=[]
+                        tempscores[word].append(float(pos_score))
+                        tempscores[word].append(-float(neg_score))
+            except:
+                pass
+                    
         for word in tempscores.keys():
             # print word, sum(scores[word])/len(scores[word])
-            scores[word] = sum(tempscores[word])/len(tempscores[word])
+            self.scores[word] = sum(tempscores[word])/len(tempscores[word])
             
     def get_sentiment(self, sentence):
         # 1. Convert to lowercase
@@ -39,6 +45,7 @@ class SimpleSentiments():
 
 if __name__ == '__main__':
     print "Loading Lexicon"
+
     simple = SimpleSentiments()
     simple.read_dictionary("C:\\Users\\admin\\Desktop\\senti.txt")
     simple.crunch_scores()
@@ -46,4 +53,4 @@ if __name__ == '__main__':
     print "Done"
     simple.get_sentiment("This is so awesome")
 
-
+#    print simple.scores["storm"]
