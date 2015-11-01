@@ -19,31 +19,27 @@ class MLSentiment():
           
     def train(self, trainfile):
         training_data = [x.strip().split('\t') for x in open(trainfile, 'r').readlines()]
-        traindata = []
+        self.vec = DictVectorizer()
+        vec_dic_list = []
         labels = []
         for i in range(len(training_data)):
             this_sentence_counts = {}
             sentence = training_data[i][0]
             sentimentlabel = training_data[i][1]
             tokens = self.get_tokens(sentence)
+            # Let's create a dictionary, again!!! word and some score in the sentence
             for token in tokens:
                 try:
                     this_sentence_counts[token] = this_sentence_counts[token] + 1
                 except:
                     this_sentence_counts[token] = 1
-               
-#             tmp2['label'] = sentimentlabel
-            traindata.append(this_sentence_counts)
-            labels.append(sentimentlabel)
-        self.vec = DictVectorizer()
-        X = self.vec.fit_transform(traindata)
-#         for row in X.toarray():
-#             print row
-#         print 'Training'
-        self.svm = SVC(C=0.1)
-        self.svm.fit(X,labels)  
-        print 'Done'
-    
+            vec_dic_list.append(this_sentence_counts)
+            labels.append(int(sentimentlabel))
+            
+        X = self.vec.fit_transform(vec_dic_list)
+        self.clf = SVC()
+        self.clf.fit(X, labels)
+        
     def predict(self, sentence):
         tokens = self.get_tokens(sentence)
         thisdict = {}
@@ -54,7 +50,7 @@ class MLSentiment():
                 thisdict[token] = 1
         
         data = self.vec.transform(thisdict)
-        return self.svm.predict(data)
+        return self.clf.predict(data)
     
     def get_tokens(self, sentence):
         test_sentence = sentence.lower()
@@ -64,12 +60,5 @@ class MLSentiment():
     
 if __name__ == '__main__':
     scores = MLSentiment()
-    scores.train("../Extras/lokesh_train_1.txt")
-    print scores.predict("2 . despite most reviewers giving kudos to the zen for music quality , i experienced a flaw using eax.")
-    print scores.predict("i am really happy to see the big screen on this camera")
-    print scores.predict("finally , i reiterate my thumbs-down rating for t-mobile as a carrier")
-    print scores.predict("nokia makes a great phone , that 's clear.")
-#     scores.test("../Extras/lokesh_test_1.txt")
-#     scores.evaluate()
- #   scores.evaluate("../Extras/lokesh_test_1.txt")
-#    scores.prediction("it's a very lovely morning today.")   
+    scores.train("../Extras/liu_simple.txt")
+    print scores.predict("never purchase this. cheap ugly")
